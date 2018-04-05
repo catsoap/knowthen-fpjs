@@ -1,6 +1,7 @@
 import 'tachyons'
-import h from 'hyperscript'
 import hh from 'hyperscript-helpers'
+import { h, diff, patch } from 'virtual-dom'
+import createElement from 'virtual-dom/create-element'
 
 const { div, button } = hh(h)
 
@@ -11,36 +12,43 @@ function view (dispatch, model) {
     div({ className: 'mv2' }, `Count ${model}`),
     button({
       className: 'pv1 ph2 mr2',
-      onclick: () => dispatch('plus')
+      onclick: () => dispatch(MSGS.ADD)
     }, '+'),
     button({
       className: 'pv1 ph2',
-      onclick: () => dispatch('minus')
+      onclick: () => dispatch(MSGS.SUBTRACT)
     }, '-')
   ])
 }
 
 function update (msg, model) {
   switch (msg) {
-    case 'plus':
+    case MSGS.ADD:
       return model + 1
-    case 'minus':
+    case MSGS.SUBTRACT:
       return model - 1
     default:
       return model
   }
 }
 
+const MSGS = {
+  ADD: 'ADD',
+  SUBTRACT: 'SUBTRACT'
+}
+
 // impure code below
 function app (initModel, update, view, node) {
   let model = initModel
   let currentView = view(dispatch, model)
-  node.appendChild(currentView)
+  let rootNode = createElement(currentView)
+  node.appendChild(rootNode)
 
   function dispatch (msg) {
     model = update(msg, model)
     const updatedView = view(dispatch, model)
-    node.replaceChild(updatedView, currentView)
+    const patches = diff(currentView, updatedView)
+    rootNode = patch(rootNode, patches)
     currentView = updatedView
   }
 }

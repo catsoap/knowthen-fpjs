@@ -1,3 +1,4 @@
+import 'tachyons'
 import h from 'hyperscript'
 import hh from 'hyperscript-helpers'
 

@@ -1,4 +1,5 @@
 import 'tachyons'
+import 'font-awesome/css/font-awesome.css'
 import initModel from './Model'
 import update from './Update'
 import view from './View'
